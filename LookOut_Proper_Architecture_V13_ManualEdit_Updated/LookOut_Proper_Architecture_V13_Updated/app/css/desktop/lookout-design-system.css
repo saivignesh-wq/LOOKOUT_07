@@ -1,0 +1,1059 @@
+/* ==========================================================
+   LOOKOUT — ANTARCTICA DESIGN SYSTEM
+   Two visual modes:
+     1) Liquid Glass  -> default
+     2) Professional   -> body.professional-mode
+
+   Light/Dark remains controlled by body.dark-mode.
+   This file is intentionally loaded LAST so the existing
+   feature CSS/HTML/JS continues to work while the visual
+   system is replaced without changing feature logic.
+   ========================================================== */
+
+:root {
+  --lk-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  /* Antarctica palette */
+  --ice-0: #f7fbfd;
+  --ice-1: #eaf3f8;
+  --ice-2: #d7e7ef;
+  --ice-3: #b9d0dc;
+  --ice-4: #8da9b8;
+  --ice-5: #5e7888;
+  --arctic-blue: #8fd5ff;
+  --arctic-cyan: #8df2ed;
+  --aurora-violet: #b7a6ff;
+  --aurora-blue: #86b7ff;
+  --aurora-green: #a8efcf;
+
+  --ink: #0d1720;
+  --ink-soft: #334754;
+  --dark-0: #05090d;
+  --dark-1: #0a1117;
+  --dark-2: #111b23;
+  --dark-3: #1a2832;
+  --dark-4: #263945;
+
+  /* Liquid glass */
+  --glass-bg: rgba(214, 231, 239, .19);
+  --glass-bg-strong: rgba(215, 232, 240, .29);
+  --glass-border: rgba(235, 249, 255, .34);
+  --glass-border-dark: rgba(213, 237, 248, .22);
+  --glass-text: #0b1820;
+  --glass-muted: #49616e;
+  --glass-shadow: rgba(9, 24, 34, .18);
+  --glass-blur: 26px;
+
+  /* Spectral edge: intentionally low opacity. */
+  --spectrum: conic-gradient(
+    from 210deg,
+    rgba(255, 77, 77, .34),
+    rgba(255, 170, 72, .26),
+    rgba(255, 239, 99, .24),
+    rgba(116, 244, 153, .25),
+    rgba(91, 223, 255, .34),
+    rgba(120, 139, 255, .31),
+    rgba(210, 137, 255, .30),
+    rgba(255, 105, 190, .24),
+    rgba(255, 77, 77, .34)
+  );
+
+  --white-reflection: linear-gradient(118deg,
+    transparent 0%,
+    transparent 33%,
+    rgba(255,255,255,.58) 45%,
+    rgba(255,255,255,.14) 52%,
+    transparent 66%,
+    transparent 100%
+  );
+
+  --edge-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --speed-fast: 150ms;
+  --speed: 220ms;
+}
+
+/* ---------- Dark Antarctica ---------- */
+body.dark-mode {
+  --page: #05090d;
+  --page-2: #08121a;
+  --surface-solid: #0d171f;
+  --surface-solid-2: #111d26;
+  --glass-bg: rgba(16, 28, 37, .57);
+  --glass-bg-strong: rgba(23, 39, 50, .72);
+  --glass-border: rgba(226, 246, 255, .24);
+  --glass-border-dark: rgba(105, 155, 180, .26);
+  --glass-text: #edf8fc;
+  --glass-muted: #9eb7c3;
+  --glass-shadow: rgba(0, 0, 0, .46);
+}
+
+/* ---------- Light Antarctica ---------- */
+body:not(.dark-mode) {
+  --page: #eef5f8;
+  --page-2: #e4eff4;
+  --surface-solid: #f6fafc;
+  --surface-solid-2: #e8f1f5;
+}
+
+/* ==========================================================
+   GLOBAL BASE
+   ========================================================== */
+
+html,
+body {
+  font-family: var(--lk-font);
+  color: var(--glass-text);
+  background: var(--page);
+}
+
+body {
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background var(--speed) ease, color var(--speed) ease;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Kill the old inner-white-shadow look globally. */
+.card,
+.glass-panel,
+.edit-preview-area,
+.center-upload,
+.profile-modal-card,
+.profile-detail,
+.profile-preferences,
+.rag-assistant,
+.generator-preview,
+.generator-bottom-bar,
+.edit-bottom-bar,
+.editor-panel,
+.secondary-toolbar,
+.main-toolbar {
+  box-shadow: none;
+}
+
+/* ==========================================================
+   AMBIENT ANTARCTICA BACKGROUND
+   ========================================================== */
+
+.ambient-bg {
+  background:
+    radial-gradient(circle at 8% 4%, rgba(141, 213, 255, .14), transparent 28%),
+    radial-gradient(circle at 91% 92%, rgba(183, 166, 255, .11), transparent 30%),
+    linear-gradient(145deg, var(--page), var(--page-2));
+}
+
+body.dark-mode .ambient-bg {
+  background:
+    radial-gradient(circle at 10% 8%, rgba(110, 210, 255, .10), transparent 28%),
+    radial-gradient(circle at 88% 88%, rgba(171, 138, 255, .08), transparent 30%),
+    linear-gradient(145deg, #04080c, #09131b 52%, #050a0f);
+}
+
+/* Existing ambient blobs become very restrained. */
+.light {
+  opacity: .18;
+  filter: blur(150px);
+  mix-blend-mode: normal;
+  animation-duration: 30s;
+}
+
+.light1 { background: rgba(141, 213, 255, .55); }
+.light2 { background: rgba(183, 166, 255, .42); }
+.light3 { background: rgba(141, 242, 237, .34); }
+
+/* ==========================================================
+   REUSABLE LIQUID GLASS SURFACE
+   ========================================================== */
+
+.card,
+.glass-panel,
+.edit-preview-area,
+.center-upload,
+.profile-modal-card,
+.profile-detail,
+.profile-preferences,
+.rag-assistant,
+.generator-preview,
+.generator-bottom-bar,
+.edit-bottom-bar,
+.editor-panel,
+.secondary-toolbar,
+.main-toolbar,
+.comparison-card,
+.uploaded-images > div,
+.generator-result-card,
+.generated-image-card,
+.download-feature-card {
+  position: relative;
+  isolation: isolate;
+  background: var(--glass-bg);
+  border: 1px solid transparent;
+  border-radius: var(--radius-lg);
+  backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(145%);
+  color: var(--glass-text);
+}
+
+/* Spectral physical edge — outside the content, not an inner glow. */
+.card::after,
+.glass-panel::after,
+.edit-preview-area::after,
+.center-upload::after,
+.profile-modal-card::after,
+.rag-assistant::after,
+.generator-preview::after,
+.generator-bottom-bar::after,
+.edit-bottom-bar::after,
+.editor-panel::after,
+.secondary-toolbar::after,
+.main-toolbar::after,
+.comparison-card::after,
+.uploaded-images > div::after,
+.generator-result-card::after,
+.generated-image-card::after,
+.download-feature-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.1px;
+  border-radius: inherit;
+  background: var(--spectrum);
+  -webkit-mask: var(--edge-mask);
+  mask: var(--edge-mask);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .58;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* Thin irregular-looking white reflection, also only at the perimeter. */
+.card::before,
+.glass-panel::before,
+.edit-preview-area::before,
+.center-upload::before,
+.profile-modal-card::before,
+.rag-assistant::before,
+.generator-preview::before,
+.generator-bottom-bar::before,
+.edit-bottom-bar::before,
+.editor-panel::before,
+.secondary-toolbar::before,
+.main-toolbar::before,
+.comparison-card::before,
+.uploaded-images > div::before,
+.generator-result-card::before,
+.generated-image-card::before,
+.download-feature-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 1.5px;
+  border-radius: inherit;
+  background: var(--white-reflection);
+  -webkit-mask: var(--edge-mask);
+  mask: var(--edge-mask);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: .50;
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* Do not use the old shine sweep. */
+.card > *,
+.glass-panel > *,
+.edit-preview-area > *,
+.center-upload > *,
+.profile-modal-card > *,
+.rag-assistant > *,
+.generator-preview > *,
+.generator-bottom-bar > *,
+.edit-bottom-bar > *,
+.editor-panel > *,
+.secondary-toolbar > *,
+.main-toolbar > * {
+  position: relative;
+  z-index: 5;
+}
+
+.card,
+.menu-item,
+.profile-icon,
+.settings,
+.logout,
+.theme-toggle,
+.workspace-menu-btn,
+.mobile-menu-btn,
+.tool-icon,
+.floating-upload-btn,
+.floating-download-btn,
+.generate-btn,
+.editor-action-btn,
+.crop-btn,
+.text-tool,
+.mode-btn,
+.rag-launcher,
+.rag-close-btn,
+.rag-send-btn,
+.rag-voice-btn,
+.profile-modal-close,
+.profile-footer button {
+  transition:
+    transform var(--speed) var(--ease),
+    background var(--speed) ease,
+    border-color var(--speed) ease,
+    color var(--speed) ease,
+    opacity var(--speed) ease;
+}
+
+.card:hover,
+.glass-panel:hover {
+  border-color: rgba(218, 243, 253, .26);
+}
+
+/* ==========================================================
+   SIDEBAR
+   ========================================================== */
+
+.sidebar {
+  background: rgba(12, 23, 31, .48) !important;
+  border-right: 1px solid rgba(226, 246, 255, .14) !important;
+  backdrop-filter: blur(30px) saturate(145%);
+  -webkit-backdrop-filter: blur(30px) saturate(145%);
+}
+
+body:not(.dark-mode) .sidebar {
+  background: rgba(237, 246, 250, .64) !important;
+  border-right-color: rgba(82, 111, 125, .16) !important;
+}
+
+.profile-icon,
+.menu-item,
+.settings,
+.logout {
+  border: 1px solid transparent;
+  border-radius: 15px;
+  background: rgba(220, 238, 246, .08);
+}
+
+.profile-icon:hover,
+.menu-item:hover,
+.settings:hover,
+.logout:hover,
+.menu-item.selected {
+  background: rgba(203, 231, 243, .16);
+  border-color: rgba(224, 247, 255, .20);
+  transform: translateY(-1px);
+}
+
+.active-indicator {
+  border-radius: 999px !important;
+  background: linear-gradient(180deg, var(--arctic-cyan), var(--arctic-blue)) !important;
+  box-shadow: 0 0 18px rgba(141, 242, 237, .20) !important;
+}
+
+/* ==========================================================
+   HOME
+   ========================================================== */
+
+.main {
+  color: var(--glass-text);
+}
+
+.main h1 {
+  letter-spacing: .16em;
+  font-weight: 700;
+}
+
+.subtitle {
+  color: var(--glass-muted) !important;
+}
+
+.cards {
+  gap: 20px;
+}
+
+.card {
+  min-height: 210px;
+  padding: 28px;
+  overflow: hidden;
+  cursor: default;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+}
+
+.card h2 {
+  letter-spacing: -.02em;
+}
+
+.card p {
+  color: var(--glass-muted);
+}
+
+.card button,
+.generate-btn,
+.editor-action-btn,
+.profile-footer button {
+  border: 1px solid rgba(224, 247, 255, .20);
+  border-radius: 13px;
+  background: rgba(196, 226, 239, .13);
+  color: inherit;
+}
+
+.card button:hover,
+.generate-btn:hover,
+.editor-action-btn:hover,
+.profile-footer button:hover {
+  background: rgba(207, 236, 247, .22);
+  transform: translateY(-1px);
+}
+
+/* ==========================================================
+   AI GENERATOR
+   ========================================================== */
+
+.generator-page,
+.ai-edit-page,
+.pro-editor-page {
+  color: var(--glass-text);
+}
+
+.generator-preview,
+.edit-preview-area {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(141, 213, 255, .07), transparent 42%),
+    rgba(11, 22, 29, .35);
+  min-height: 420px;
+}
+
+body:not(.dark-mode) .generator-preview,
+body:not(.dark-mode) .edit-preview-area {
+  background:
+    radial-gradient(circle at 50% 35%, rgba(141, 213, 255, .10), transparent 42%),
+    rgba(235, 245, 249, .55);
+}
+
+.generator-bottom-bar,
+.edit-bottom-bar {
+  border-radius: 20px;
+  padding: 12px;
+  background: rgba(12, 25, 34, .50);
+}
+
+body:not(.dark-mode) .generator-bottom-bar,
+body:not(.dark-mode) .edit-bottom-bar {
+  background: rgba(244, 250, 252, .64);
+}
+
+.mode-btn,
+.operation-select-wrap,
+.generator-bottom-bar input,
+.generator-bottom-bar textarea,
+.edit-bottom-bar input,
+.edit-bottom-bar textarea,
+.edit-bottom-bar select {
+  border: 1px solid rgba(223, 245, 255, .16) !important;
+  background: rgba(195, 226, 240, .09) !important;
+  color: inherit !important;
+  border-radius: 12px !important;
+}
+
+.mode-btn.active {
+  background: rgba(151, 218, 243, .18) !important;
+  border-color: rgba(154, 226, 255, .30) !important;
+}
+
+.center-upload {
+  background: rgba(196, 225, 237, .10);
+  color: var(--glass-muted);
+}
+
+/* ==========================================================
+   MANUAL EDITOR — PROFESSIONAL WORKSPACE, GLASS SURFACES
+   ========================================================== */
+
+.pro-editor-page {
+  gap: 12px;
+}
+
+.pro-canvas-container {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(126, 183, 214, .08), transparent 44%),
+    rgba(7, 14, 19, .54) !important;
+  border-radius: 20px !important;
+}
+
+body:not(.dark-mode) .pro-canvas-container {
+  background:
+    radial-gradient(circle at 50% 48%, rgba(126, 183, 214, .10), transparent 44%),
+    rgba(236, 245, 249, .72) !important;
+}
+
+.main-toolbar,
+.secondary-toolbar,
+.editor-panel {
+  background: rgba(14, 26, 35, .58) !important;
+}
+
+body:not(.dark-mode) .main-toolbar,
+body:not(.dark-mode) .secondary-toolbar,
+body:not(.dark-mode) .editor-panel {
+  background: rgba(245, 250, 252, .72) !important;
+}
+
+.tool-icon,
+.crop-btn,
+.text-tool,
+.control-pill,
+.editor-select,
+.floating-upload-btn,
+.floating-download-btn {
+  border: 1px solid rgba(220, 244, 255, .15) !important;
+  background: rgba(198, 227, 239, .08) !important;
+  color: inherit !important;
+  border-radius: 12px !important;
+}
+
+.tool-icon:hover,
+.tool-icon.active-tool,
+.crop-btn:hover,
+.text-tool:hover,
+.floating-upload-btn:hover,
+.floating-download-btn:hover {
+  background: rgba(163, 219, 241, .16) !important;
+  border-color: rgba(164, 227, 251, .26) !important;
+  transform: translateY(-1px);
+}
+
+.control-pill input[type="range"] {
+  accent-color: var(--arctic-blue);
+}
+
+/* ==========================================================
+   RAG ASSISTANT
+   ========================================================== */
+
+.rag-launcher {
+  border: 1px solid transparent !important;
+  background: rgba(19, 34, 44, .64) !important;
+  color: var(--glass-text) !important;
+  backdrop-filter: blur(24px) saturate(145%);
+  -webkit-backdrop-filter: blur(24px) saturate(145%);
+}
+
+.rag-launcher::after,
+.rag-assistant::after {
+  opacity: .50;
+}
+
+.rag-header,
+.rag-input-area {
+  border-color: rgba(225, 245, 255, .12) !important;
+}
+
+.rag-message-content,
+.rag-input,
+.rag-avatar,
+.rag-message-avatar,
+.rag-voice-btn,
+.rag-send-btn,
+.rag-close-btn {
+  border: 1px solid rgba(223, 246, 255, .14) !important;
+  background: rgba(191, 223, 237, .08) !important;
+  color: inherit !important;
+}
+
+.rag-message.user .rag-message-content {
+  background: rgba(141, 213, 255, .13) !important;
+}
+
+/* ==========================================================
+   PROFILE
+   ========================================================== */
+
+.profile-modal-backdrop {
+  background: rgba(3, 9, 13, .50) !important;
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+}
+
+.profile-modal-card {
+  background: rgba(16, 29, 38, .72) !important;
+  border-color: transparent !important;
+  color: var(--glass-text) !important;
+}
+
+body:not(.dark-mode) .profile-modal-card {
+  background: rgba(240, 248, 251, .76) !important;
+  color: var(--ink) !important;
+}
+
+.profile-modal-glow {
+  opacity: .12 !important;
+}
+
+.profile-info-item,
+.profile-section,
+.profile-footer,
+.profile-modal-close {
+  border-color: rgba(222, 245, 255, .13) !important;
+}
+
+.profile-info-item {
+  background: rgba(193, 224, 237, .07) !important;
+}
+
+.profile-footer button,
+.profile-modal-close {
+  background: rgba(193, 224, 237, .09) !important;
+  color: inherit !important;
+}
+
+/* ==========================================================
+   LIGHT/DARK THEME BUTTON
+   ========================================================== */
+
+.theme-toggle {
+  border: 1px solid rgba(224, 246, 255, .18) !important;
+  background: rgba(191, 223, 237, .10) !important;
+  color: inherit !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+/* ==========================================================
+   PROFESSIONAL THEME
+   No spectral edge. Minimal motion. More solid, technical,
+   restrained surfaces while preserving the Antarctica palette.
+   ========================================================== */
+
+body.professional-mode {
+  --glass-blur: 10px;
+  --glass-bg: rgba(246, 250, 252, .94);
+  --glass-bg-strong: rgba(250, 252, 253, .98);
+  --glass-border: rgba(77, 101, 114, .18);
+  --glass-text: #14222b;
+  --glass-muted: #5e707b;
+  --glass-shadow: rgba(12, 25, 33, .10);
+}
+
+body.dark-mode.professional-mode {
+  --glass-bg: rgba(17, 27, 35, .96);
+  --glass-bg-strong: rgba(21, 33, 42, .98);
+  --glass-border: rgba(190, 220, 234, .14);
+  --glass-text: #e8f2f6;
+  --glass-muted: #93aab6;
+  --glass-shadow: rgba(0, 0, 0, .30);
+}
+
+body.professional-mode .ambient-bg {
+  background: var(--page);
+}
+
+body.professional-mode .light {
+  opacity: .06;
+  animation: none;
+}
+
+body.professional-mode .card,
+body.professional-mode .glass-panel,
+body.professional-mode .edit-preview-area,
+body.professional-mode .center-upload,
+body.professional-mode .profile-modal-card,
+body.professional-mode .rag-assistant,
+body.professional-mode .generator-preview,
+body.professional-mode .generator-bottom-bar,
+body.professional-mode .edit-bottom-bar,
+body.professional-mode .editor-panel,
+body.professional-mode .secondary-toolbar,
+body.professional-mode .main-toolbar,
+body.professional-mode .comparison-card,
+body.professional-mode .uploaded-images > div,
+body.professional-mode .generator-result-card,
+body.professional-mode .generated-image-card,
+body.professional-mode .download-feature-card {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  box-shadow: 0 12px 30px var(--glass-shadow);
+}
+
+body.professional-mode .card::after,
+body.professional-mode .glass-panel::after,
+body.professional-mode .edit-preview-area::after,
+body.professional-mode .center-upload::after,
+body.professional-mode .profile-modal-card::after,
+body.professional-mode .rag-assistant::after,
+body.professional-mode .generator-preview::after,
+body.professional-mode .generator-bottom-bar::after,
+body.professional-mode .edit-bottom-bar::after,
+body.professional-mode .editor-panel::after,
+body.professional-mode .secondary-toolbar::after,
+body.professional-mode .main-toolbar::after,
+body.professional-mode .comparison-card::after,
+body.professional-mode .uploaded-images > div::after,
+body.professional-mode .generator-result-card::after,
+body.professional-mode .generated-image-card::after,
+body.professional-mode .download-feature-card::after,
+body.professional-mode .card::before,
+body.professional-mode .glass-panel::before,
+body.professional-mode .edit-preview-area::before,
+body.professional-mode .center-upload::before,
+body.professional-mode .profile-modal-card::before,
+body.professional-mode .rag-assistant::before,
+body.professional-mode .generator-preview::before,
+body.professional-mode .generator-bottom-bar::before,
+body.professional-mode .edit-bottom-bar::before,
+body.professional-mode .editor-panel::before,
+body.professional-mode .secondary-toolbar::before,
+body.professional-mode .main-toolbar::before,
+body.professional-mode .comparison-card::before,
+body.professional-mode .uploaded-images > div::before,
+body.professional-mode .generator-result-card::before,
+body.professional-mode .generated-image-card::before,
+body.professional-mode .download-feature-card::before {
+  display: none;
+}
+
+body.professional-mode .card:hover,
+body.professional-mode .glass-panel:hover {
+  transform: translateY(-2px);
+  border-color: rgba(102, 150, 174, .34);
+}
+
+body.professional-mode .card,
+body.professional-mode .tool-icon,
+body.professional-mode .menu-item,
+body.professional-mode .profile-icon,
+body.professional-mode .settings,
+body.professional-mode .logout,
+body.professional-mode button {
+  transition-duration: var(--speed-fast);
+}
+
+body.professional-mode .pro-canvas-container {
+  box-shadow: inset 0 0 0 1px rgba(102, 135, 151, .14) !important;
+}
+
+/* ==========================================================
+   ACCESSIBILITY / MOTION
+   ========================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: .001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@media (max-width: 900px) {
+  .card:hover,
+  .glass-panel:hover {
+    transform: none;
+  }
+}
+
+/* UI style switch injected by theme.js */
+.ui-style-toggle {
+  position: fixed;
+  top: 18px;
+  right: 78px;
+  z-index: 5000;
+  min-width: 82px;
+  height: 38px;
+  padding: 0 12px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(224, 246, 255, .18);
+  border-radius: 12px;
+  background: rgba(191, 223, 237, .10);
+  color: var(--glass-text);
+  backdrop-filter: blur(18px) saturate(145%);
+  -webkit-backdrop-filter: blur(18px) saturate(145%);
+  cursor: pointer;
+}
+
+.ui-style-toggle:hover {
+  background: rgba(191, 223, 237, .17);
+  border-color: rgba(224, 246, 255, .28);
+  transform: translateY(-1px);
+}
+
+.ui-style-toggle span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .05em;
+}
+
+body.professional-mode .ui-style-toggle {
+  background: var(--surface-solid);
+  border-color: var(--glass-border);
+  box-shadow: 0 8px 24px var(--glass-shadow);
+}
+
+@media (max-width: 768px) {
+  .ui-style-toggle {
+    top: 12px;
+    right: 64px;
+    min-width: 40px;
+    width: 40px;
+    padding: 0;
+  }
+
+  .ui-style-toggle span {
+    display: none;
+  }
+}
+
+/* Neutralize legacy animated gloss layers from the original CSS. */
+.card::before,
+.glass-panel::before,
+.edit-preview-area::before,
+.center-upload::before,
+.profile-modal-card::before,
+.rag-assistant::before,
+.generator-preview::before,
+.generator-bottom-bar::before,
+.edit-bottom-bar::before,
+.editor-panel::before,
+.secondary-toolbar::before,
+.main-toolbar::before,
+.comparison-card::before,
+.uploaded-images > div::before,
+.generator-result-card::before,
+.generated-image-card::before,
+.download-feature-card::before {
+  animation: none !important;
+  transform: none !important;
+}
+
+/* ==========================================================
+   FUTURE FEATURE-INSTALLATION UI
+   These hooks are intentionally generic so dynamically
+   downloaded features can be inserted without a redesign.
+   ========================================================== */
+
+.feature-slot,
+.feature-card,
+.feature-install,
+.feature-status,
+.feature-download-row,
+.installed-feature,
+.feature-chip {
+  position: relative;
+  border-radius: 14px;
+  border: 1px solid rgba(220, 244, 255, .15);
+  background: rgba(190, 222, 236, .08);
+  color: inherit;
+  backdrop-filter: blur(18px) saturate(135%);
+  -webkit-backdrop-filter: blur(18px) saturate(135%);
+}
+
+.feature-slot {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+}
+
+.feature-card {
+  min-height: 90px;
+  padding: 14px;
+}
+
+.feature-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 12px;
+}
+
+.feature-install,
+.feature-download-row button {
+  cursor: pointer;
+  padding: 8px 11px;
+  font-weight: 650;
+}
+
+.feature-install:hover,
+.feature-download-row button:hover {
+  background: rgba(141, 213, 255, .15);
+  border-color: rgba(157, 227, 252, .28);
+}
+
+.feature-status {
+  padding: 7px 10px;
+  font-size: 11px;
+  color: var(--glass-muted);
+}
+
+.feature-status[data-state="installed"] {
+  color: #a8efcf;
+  border-color: rgba(168, 239, 207, .24);
+}
+
+.feature-status[data-state="downloading"] {
+  color: var(--arctic-blue);
+}
+
+.feature-status[data-state="error"] {
+  color: #ffb0b0;
+}
+
+body.professional-mode .feature-slot,
+body.professional-mode .feature-card,
+body.professional-mode .feature-install,
+body.professional-mode .feature-status,
+body.professional-mode .feature-download-row,
+body.professional-mode .installed-feature,
+body.professional-mode .feature-chip {
+  background: var(--glass-bg);
+  border-color: var(--glass-border);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+/* =========================================================
+   LOOKOUT GLOBAL WORKSPACE TOOLS
+   ========================================================= */
+.workspace-dock{
+  position:fixed;
+  right:22px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  z-index:5100;
+  transition:opacity .28s ease, visibility .28s ease;
+}
+.workspace-dock.home-hidden{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+.workspace-dock-item{position:relative;display:flex;justify-content:flex-end;}
+.workspace-dock-launcher{
+  width:52px;height:52px;border-radius:17px;
+  border:1px solid rgba(255,255,255,.20);
+  color:var(--glass-text,#eefaff);
+  background:linear-gradient(145deg,rgba(255,255,255,.15),rgba(255,255,255,.045));
+  backdrop-filter:blur(26px) saturate(155%);
+  -webkit-backdrop-filter:blur(26px) saturate(155%);
+  box-shadow:0 14px 36px rgba(0,0,0,.16),0 1px 0 rgba(255,255,255,.08);
+  cursor:pointer;
+  transition:transform .3s cubic-bezier(.22,1,.36,1),background .3s ease,border-color .3s ease;
+}
+.workspace-dock-launcher:hover{transform:scale(1.07);background:rgba(255,255,255,.20);}
+.workspace-dock-item.open .workspace-dock-launcher{transform:scale(1.04);}
+body:not(.dark-mode) .workspace-dock-launcher{
+  color:#12212a;
+  background:linear-gradient(145deg,rgba(255,255,255,.54),rgba(223,238,245,.22));
+  border-color:rgba(255,255,255,.55);
+  box-shadow:0 14px 36px rgba(33,62,77,.12),0 1px 0 rgba(255,255,255,.45);
+}
+.workspace-dock-content{
+  position:absolute;
+  right:64px;
+  top:50%;
+  transform:translate(10px,-50%) scale(.96);
+  transform-origin:right center;
+  width:min(620px,calc(100vw - 150px));
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+  transition:opacity .26s ease,transform .32s cubic-bezier(.22,1,.36,1),visibility .26s ease;
+}
+.workspace-dock-item.open .workspace-dock-content{
+  opacity:1;
+  visibility:visible;
+  pointer-events:auto;
+  transform:translate(0,-50%) scale(1);
+}
+.workspace-dock-content .global-tool-panel{
+  width:100%;
+  box-sizing:border-box;
+  padding:16px;
+  border-radius:22px;
+}
+.workspace-dock-content .quick-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;}
+.workspace-dock-content .quick-action{min-height:92px;border-radius:15px;}
+.workspace-dock-content .explore-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.workspace-dock-content .explore-card{min-height:94px;border-radius:15px;}
+
+/* =========================================================
+   LOGOUT CONFIRMATION
+   ========================================================= */
+.logout-confirm-modal{
+  position:fixed;inset:0;z-index:12000;display:flex;align-items:center;justify-content:center;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .25s ease,visibility .25s ease;
+}
+.logout-confirm-modal.active{opacity:1;visibility:visible;pointer-events:auto;}
+.logout-confirm-backdrop{position:absolute;inset:0;background:rgba(3,10,15,.34);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);}
+.logout-confirm-card{
+  position:relative;width:min(430px,calc(100vw - 36px));padding:26px;border-radius:28px;
+  color:var(--lk-ink,#eefaff);
+  background:linear-gradient(145deg,rgba(255,255,255,.19),rgba(255,255,255,.055));
+  border:1px solid rgba(255,255,255,.25);
+  backdrop-filter:blur(34px) saturate(155%);-webkit-backdrop-filter:blur(34px) saturate(155%);
+  box-shadow:0 28px 90px rgba(0,0,0,.28),0 1px 0 rgba(255,255,255,.12);
+  transform:translateY(12px) scale(.97);transition:transform .34s cubic-bezier(.22,1,.36,1);
+}
+.logout-confirm-modal.active .logout-confirm-card{transform:none;}
+body:not(.dark-mode) .logout-confirm-card{background:linear-gradient(145deg,rgba(255,255,255,.62),rgba(220,236,244,.32));border-color:rgba(255,255,255,.58);box-shadow:0 28px 90px rgba(39,67,82,.18),0 1px 0 rgba(255,255,255,.58);}
+.logout-confirm-icon{width:50px;height:50px;border-radius:16px;display:grid;place-items:center;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);font-size:21px;margin-bottom:15px;}
+.logout-confirm-card h3{margin:0 0 8px;font-size:21px;}
+.logout-confirm-card p{margin:0;color:var(--lk-muted,#9bb2bf);font-size:13px;line-height:1.55;}
+.logout-confirm-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:22px;}
+.logout-confirm-actions button{border:1px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 17px;font:inherit;cursor:pointer;color:inherit;background:rgba(255,255,255,.08);transition:transform .25s ease,background .25s ease;}
+.logout-confirm-actions button:hover{transform:translateY(-2px);background:rgba(255,255,255,.16);}
+.logout-confirm-actions .confirm-logout{background:rgba(255,115,115,.16);border-color:rgba(255,150,150,.25);}
+
+@media(max-width:900px){
+  .workspace-dock{right:14px;}
+  .workspace-dock-content{right:60px;width:min(560px,calc(100vw - 92px));}
+  .workspace-dock-content .quick-grid{grid-template-columns:repeat(3,1fr);}
+}
+@media(max-width:600px){
+  .workspace-dock{right:10px;}
+  .workspace-dock-launcher{width:48px;height:48px;border-radius:15px;}
+  .workspace-dock-content{right:56px;width:calc(100vw - 76px);}
+  .workspace-dock-content .quick-grid,.workspace-dock-content .explore-grid{grid-template-columns:repeat(2,1fr);}
+}
+
+
+/* Manual Edit keeps global utility controls inside the native LookOut sidebar. */
+body.manual-editor-active .workspace-dock{display:none !important;}
+body.manual-editor-active .rag-assistant:not(.open){display:none !important;}
+/* Settings is intentionally removed from every LookOut sidebar. */
+.settings{display:none !important;}
